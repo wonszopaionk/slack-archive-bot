@@ -24,15 +24,15 @@ conn = sqlite3.connect(args.database_path)
 cursor = conn.cursor()
 cursor.execute('create table if not exists messages (message text, user text, channel text, timestamp text, UNIQUE(channel, timestamp) ON CONFLICT REPLACE)')
 cursor.execute('create table if not exists users (name text, id text, avatar text, UNIQUE(id) ON CONFLICT REPLACE)')
-cursor.execute('create table if not exists channels (name text, id text, UNIQUE(id) ON CONFLICT REPLACE)')
+cursor.execute('create table if not exists channels (name text, id text, members text, UNIQUE(id) ON CONFLICT REPLACE)')
 
 directory = args.directory
 
 logger.info("Importing channels..")
 with open(os.path.join(directory, 'channels.json')) as f:
     channels = json.load(f)
-args = [(c['name'], c['id']) for c in channels]
-cursor.executemany('INSERT INTO channels VALUES(?,?)', (args))
+args = [(c['name'], c['id'], c['members']) for c in channels]
+cursor.executemany('INSERT INTO channels VALUES(?,?,?)', (args))
 logger.info("- Channels imported")
 
 logger.info("Importing users..")
