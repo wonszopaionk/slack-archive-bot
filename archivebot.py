@@ -6,8 +6,8 @@ import sqlite3
 import time
 import traceback
 
-from slackclient import SlackClient
-from websocket import WebSocketConnectionClosedException
+from slack import WebClient
+import websocket as ws
 
 
 
@@ -37,7 +37,7 @@ slack_token = os.environ["SLACK_API_TOKEN"]
 
 # Makes bot user active on Slack
 # NOTE: terminal must be running for the bot to continue
-sc = SlackClient(slack_token)
+sc = WebClient(slack_token)
 
 # Double naming for better search functionality
 # Keys are both the name and unique ID where needed
@@ -238,7 +238,7 @@ if sc.rtm_connect(auto_reconnect=True):
                         update_channels()
                 elif event['type'] in ['group_joined', 'member_joined_channel', 'channel_created', 'group_left']:
                     update_channels()
-        except WebSocketConnectionClosedException:
+        except ws.WebSocketConnectionClosedException:
             sc.rtm_connect()
         except:
             logger.error(traceback.format_exc())
